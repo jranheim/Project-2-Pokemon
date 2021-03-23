@@ -27,9 +27,7 @@ public class Backend implements BackendInterface {
 	
 	private List<Pokemon> currTeam = new ArrayList<Pokemon>(); // current team
 	
-	private List<Pokemon> allPokemon = new ArrayList<Pokemon>(); // all pokemon, sorted by strength
-	
-	private List<Pokemon> availablePokemon = new ArrayList<Pokemon>(); // available pokemon, filtered by types, sorted by strength
+	private RedBlackTree<Pokemon> allPokemon = new RedBlackTree<Pokemon>(); // tree of all pokemon from the provided file
 	
 	/**
 	 * constructor to get list of Pokemon from CSV file passed in by user.
@@ -46,7 +44,7 @@ public class Backend implements BackendInterface {
 			Scanner myReader = new Scanner(file);
 			
 			while (myReader.hasNextLine()) {
-				data += myReader.nextLine();
+				data += myReader.nextLine() + "\n";
 			}
 			myReader.close();
 		} catch (FileNotFoundException e) {
@@ -54,21 +52,21 @@ public class Backend implements BackendInterface {
 			e.printStackTrace();
 		}
 		
-		StringReader sr = new StringReader(data);
+		List<Pokemon> newPokemon = new ArrayList<Pokemon>();
 		
-		// TODO: use data wrangler classes to read the data in from file to 
-		// Pokemon objects and Lists.
+		String[] test = data.split("\n");
+		for (String s : test) {
+			String[] array = s.split(",");
+			Pokemon P = new Pokemon(array[0], Integer.parseInt(array[1]), array[2]);
+			newPokemon.add(P);
+		}
 		
-		// Dummy Format: name, totalStats, types, HP, AP, speed, defense
-		
-		
-		// add each type to the list of allTypes
-		String e = "";
-		allTypes.add(e);
-		
-		// add each Pokemon object to the list of allPokemon
-		Pokemon poke = null;
-		allPokemon.add(poke);
+		for (Pokemon pokemon : newPokemon) {
+			if (!allTypes.contains(pokemon.type)) {
+				allTypes.add(pokemon.type); // add pokemon's type if it isn't already added
+			}
+			allPokemon.insert(pokemon); // insert into red black tree
+		}
 		
 	}
 	
@@ -86,14 +84,14 @@ public class Backend implements BackendInterface {
 	
 	/*
 	 * Removes the type filter provided by user from types list 
-	 * so availablePokemon is no longer filtered by that type.
+	 * so filteredPokemon is no longer filtered by that type.
 	 * 
 	 * @param type - name of type user no longer wants to filter by
 	 */
 	@Override
 	public void removeType(String type) {
 		if (types.indexOf(type) < 0) {
-			System.out.println("type not valid");
+			System.out.println("Type not found.");
 		} else {
 			int index = types.indexOf(type);
 			types.remove(index);
@@ -104,7 +102,7 @@ public class Backend implements BackendInterface {
 	 * Returns the current type(s) being used to filter 
 	 * availablePokemon.
 	 * 
-	 * @return List of types of pokemon availablePokemon is being filtered by
+	 * @return List of types that filteredPokemon is being filtered by
 	 */
 	@Override
 	public List<String> currTypes() {
@@ -127,29 +125,44 @@ public class Backend implements BackendInterface {
 	 * If type has been provided, available pokemon will be filtered 
 	 * to show only pokemon of that type.
 	 * 
-	 * @return List of available pokemon
+	 * @return List of filtered pokemon
 	 */
 	@Override
-	public List<Pokemon> getPokemon() {
+	public RedBlackTree<Pokemon> getPokemon() {
 		// if no types are chosen to filter by, return all pokemon
 		if (types.size() == 0) {
 			return allPokemon;
 		} 
 		
+		RedBlackTree<Pokemon> filteredPokemon = new RedBlackTree<Pokemon>();
+		
 		// if types has elements, iterate through allPokemon and add pokemon of the
 		// filtered type to availablePokemon, then return availablePokemon.
-		return availablePokemon;
+		for (Pokemon pokemon : allPokemon) {
+			if (types.contains(pokemon.type)) {
+				filteredPokemon.insert(pokemon);
+			}
+		}		
+		return filteredPokemon;
 	}
 	
 	/*
 	 * Adds given Pokemon object to the current team. 
 	 * If pokemon is already in the current team, message
 	 * is displayed saying so, and object is not added again.
+	 * If the max team size of 6 is exceeded, Pokemon is not
+	 * added and a message is displayed.
 	 * 
 	 * @param pokemon - Pokemon object to be added
 	 */
 	@Override
 	public void addPokemon(Pokemon pokemon) {
+		if (teamSize() > 5) {
+			System.out.println("Team is already full! You must remove a "
+					+ "Pokemon before adding another.");
+			return;
+		}
+		
 		if (currTeam.indexOf(pokemon) < 0) {
 			currTeam.add(pokemon);
 		} else {

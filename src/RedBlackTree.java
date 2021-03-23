@@ -1,18 +1,19 @@
 // --== CS400 File Header Information ==--
-// Name: Jarred Blinken
-// Email: blinken@wisc.cu
+// Name: Jake Schroeder
+// Email: schroeder22@wisc.edu
 // Team: KG
 // TA: Keren Chen
-// Lecturer: Gary Dahl
-// Notes to Grader:
+// Lecturer: Florian
+// Notes to Grader: 
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Stack;
-import java.util.Scanner; //TODO delete before submission
 
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Red-Black Tree implementation with a Node inner class for representing
@@ -32,13 +33,10 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
     protected static class Node<T> {
         public T data;
         public Node<T> parent; // null for root node
-        public Node<T> leftChild;
-        public Node<T> rightChild;
-        public boolean isBlack;
-        public Node(T data) {
-            this.data = data;
-            isBlack = false;
-        }
+        public Node<T> leftChild; 
+        public Node<T> rightChild; 
+        public Node(T data) { this.data = data; }
+        public boolean isBlack; // false for new nodes
         /**
          * @return true when this node has a parent and is the left child of
          * that parent, otherwise return false
@@ -46,12 +44,16 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
         public boolean isLeftChild() {
             return parent != null && parent.leftChild == this;
         }
-        public boolean isRightChild()  {
-            return parent != null && parent.rightChild == this;
-        }
         /**
-         * This method performs a level order traversal of the tree and returns a string
-         * representation of the tree
+         * This method performs a level order traversal of the tree rooted
+         * at the current node. The string representations of each data value
+         * within this tree are assembled into a comma separated string within
+         * brackets (similar to many implementations of java.util.Collection).
+         * Note that the Node's implementation of toString generates a level
+         * order traversal. The toString of the RedBlackTree class below
+         * produces an inorder traversal of the nodes / values of the tree.
+         * This method will be helpful as a helper for the debugging and testing
+         * of your rotation implementation.
          * @return string containing the values of this tree in level order
          */
         @Override
@@ -70,12 +72,12 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
         }
     }
 
-    protected Node<T> root = null; // reference to root node of tree, null when empty
+    protected Node<T> root; // reference to root node of tree, null when empty
     protected int size = 0; // the number of values in the tree
-
+    
     /**
      * Performs a naive insertion into a binary search tree: adding the input
-     * data value to a new node in a leaf position within the tree. After
+     * data value to a new node in a leaf position within the tree. After  
      * this insertion, no attempt is made to restructure or balance the tree.
      * This tree will not hold null references, nor duplicate data values.
      * @param data to be added into this binary search tree
@@ -88,29 +90,34 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
     public boolean insert(T data) throws NullPointerException, IllegalArgumentException {
         // null references cannot be stored within this tree
         if(data == null) throw new NullPointerException(
-                "This RedBlackTree cannot store null references.");
+            "This RedBlackTree cannot store null references.");
 
         Node<T> newNode = new Node<>(data);
-        if(root == null) {
-            root = newNode;
-            size++;
-            return true;
-        } // add first node to an empty tree
-        else{
+        newNode.isBlack = false; // ensures newly inserted nodes are red
+        if(root == null) { 
+            root = newNode; 
+            newNode.isBlack = true; 
+            size++; 
+            return true; 
+        } else { 
             boolean returnValue = insertHelper(newNode,root); // recursively insert into subtree
-            if (returnValue) size++;
-            else throw new IllegalArgumentException("This RedBlackTree already contains that value.");
-            root.isBlack = true;
+            if (returnValue) {
+                root.isBlack = true;
+                size++;
+            } else {
+                throw new IllegalArgumentException(
+	    	        "This RedBlackTree already contains that value.");
+            }
             return returnValue;
         }
     }
 
-    /**
+    /** 
      * Recursive helper method to find the subtree with a null reference in the
      * position that the newNode should be inserted, and then extend this tree
      * by the newNode in that position.
      * @param newNode is the new node that is being added to this tree
-     * @param subtree is the reference to a node within this tree which the
+     * @param subtree is the reference to a node within this tree which the 
      *      newNode should be inserted as a descenedent beneath
      * @return true is the value was inserted in subtree, false if not
      */
@@ -119,81 +126,90 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
         // do not allow duplicate values to be stored within this tree
         if(compare == 0) return false;
 
-            // store newNode within left subtree of subtree
+        // store newNode within left subtree of subtree
         else if(compare < 0) {
             if(subtree.leftChild == null) { // left subtree empty, add here
                 subtree.leftChild = newNode;
                 newNode.parent = subtree;
-                enforceRBTreePropertiesAfterInsert(subtree.leftChild);
+                enforceRBTreePropertiesAfterInsert(newNode);
                 return true;
-                // otherwise continue recursive search for location to insert
+            // otherwise continue recursive search for location to insert
             } else return insertHelper(newNode, subtree.leftChild);
         }
 
         // store newNode within the right subtree of subtree
-        else {
+        else { 
             if(subtree.rightChild == null) { // right subtree empty, add here
                 subtree.rightChild = newNode;
                 newNode.parent = subtree;
-                enforceRBTreePropertiesAfterInsert(subtree.rightChild);
+                enforceRBTreePropertiesAfterInsert(newNode);
                 return true;
-                // otherwise continue recursive search for location to insert
+            // otherwise continue recursive search for location to insert
             } else return insertHelper(newNode, subtree.rightChild);
         }
     }
+    
+     /** 
+      * Recursive helper method to resolve any red black tree property
+      * violations that occur after inserting a new red node to the tree.
+      * @param redNode is the new node that is being added to this tree, 
+      * and when called recursively is a red node that violates a tree property.
+      */
+     private void enforceRBTreePropertiesAfterInsert(Node<T> redNode) {
+         // root property : root node is black - handled in insert method
+         if (redNode.parent == null) {  
+             return; 
+         }
+         // red property : red nodes must have black children
+         Node<T> P = redNode.parent; // get redNode's parent to check color
+         Node<T> S = null; // placeholder for Sibling node if needed
+         // case 1: redNode's parent P is black, no fix necessary.
+         
+         // case 2: redNode and it's parent P are red
+         if (!P.isBlack && !redNode.isBlack) {
+             Node<T> G = P.parent; // since P is red, we know it isn't the root, so it has a parent
+             if (P.isLeftChild()) { // get P's sibling in variable S
+                 S = G.rightChild; 
+             } else {
+                 S = G.leftChild;
+             }
+             // case 2.1: P's sibling S is black (or null)
+             if (S == null || S.isBlack) {
+                 // remember order for recoloring difference 
+                 boolean hetero = (redNode.isLeftChild() == P.isLeftChild());
+                 // 1) rotation
+                 rotate(redNode, P);
+                   
+                 // 2) recolor depending on which rotate was applied
+                 if (hetero) {
+                     P.isBlack = true;
+                     G.isBlack = false;
+                     redNode.isBlack = false;
+                 } else {
+                     redNode.isBlack = true;
+                     P.isBlack = false;
+                     G.isBlack = false;
+                 }
+             } else { // case 2.2: P's sibling S is red
+                 // 1) set P's parent G to red
+                 G.isBlack = false;
+                 // 2) set P and S to black
+                 P.isBlack = true;
+                 S.isBlack = true;               
+                 // 3) leave C red
+                 redNode.isBlack = false;
+                 enforceRBTreePropertiesAfterInsert(G);
+             }
+                             
+         }
+         return;
+                
+         // black property : every path from root to a NULL child 
+         // must have the same number of black nodes. New nodes are red,
+         // so the first calling of this method won't violate this property.
 
-    private void enforceRBTreePropertiesAfterInsert(Node<T> k)  {
-        Node<T> u;
-        if(k.parent.parent != null) {
-            if (k.parent != null) {
-                while (k.parent.isBlack == false) {
-                    if (k.parent.equals(k.parent.parent.rightChild)) {
-                        if(k.parent.parent.leftChild != null) {
-                            u = k.parent.parent.leftChild;
-                            if (u.isBlack == false) {
-                                u.isBlack = true;
-                                k.parent.isBlack = true;
-                                k.parent.parent.isBlack = false;
-                                k = k.parent.parent;
-                            } else {
-                                if (k == k.parent.leftChild) {
-                                    k = k.parent;
-                                    rightRotate(k);
-                                }
-                                k.parent.isBlack = true;
-                                k.parent.parent.isBlack = false;
-                                leftRotate(k.parent.parent);
-                            }
-                        }
-                    } else {
-                        if (k.parent.parent.rightChild != null) {
-                            u = k.parent.parent.rightChild;
-                            if (u.isBlack == false) {
-                                // mirror case 3.1
-                                u.isBlack = true;
-                                k.parent.isBlack = true;
-                                k.parent.parent.isBlack = false;
-                                k = k.parent.parent;
-                            } else {
-                                if (k == k.parent.rightChild) {
-                                    k = k.parent;
-                                    leftRotate(k);
-                                }
-                                k.parent.isBlack = true;
-                                k.parent.parent.isBlack = false;
-                                rightRotate(k.parent.parent);
-                            }
-                        }
-                    }
-                    if (k == root) {
-                        break;
-                    }
-                }
-                root.isBlack = true;
-            }
-        }
-    }
-
+     }
+    
     /**
      * Performs the rotation operation on the provided nodes within this tree.
      * When the provided child is a leftChild of the provided parent, this
@@ -209,60 +225,63 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
      *      node references are not initially (pre-rotation) related that way
      */
     private void rotate(Node<T> child, Node<T> parent) throws IllegalArgumentException {
-        if(parent.leftChild == child) {
-            leftRotate(parent);
-        } else if(parent.rightChild == child) {
-            rightRotate(parent);
-        } else {
-            throw new IllegalArgumentException("child and parent nodes are not related");
+        // start by making sure parent is child's parent, if false then throw exception.
+        if (child.parent.data != parent.data) {
+            throw new IllegalArgumentException(
+                "Provided nodes are not related in the form <child, parent>.");
         }
+        
+        Node<T> G = parent.parent;
+        
+        // Case 1: G - leftChild - leftChild - right rotate
+        if (child.isLeftChild() && parent.isLeftChild()) {
+            G.leftChild = parent.rightChild;
+            if (G.leftChild != null) G.leftChild.parent = G;
+            parent.parent = G.parent;
+            if (G.parent == null) root = parent;
+            else if (G.isLeftChild()) G.parent.leftChild = parent;
+            else G.parent.rightChild = parent;
+            G.parent = parent;
+            parent.rightChild = G;
+        }
+        
+        // Case 2: G - rightChild - rightChild - left rotate
+        else if (!child.isLeftChild() && !parent.isLeftChild()) {
+            G.rightChild = parent.leftChild;
+            if (G.rightChild != null) G.rightChild.parent = G;
+            parent.parent = G.parent;
+            if (G.parent == null) root = parent;
+            else if (G.isLeftChild()) G.parent.leftChild = parent;
+            else G.parent.rightChild = parent;
+            G.parent = parent;
+            parent.leftChild = G;
+        }
+        
+        // Case 3: G - leftChild - rightChild - left-right rotate
+        else if (!child.isLeftChild() && parent.isLeftChild()) {
+            G.leftChild = child;
+            child.parent = G;
+            parent.rightChild = child.leftChild;
+            if (parent.rightChild != null) parent.rightChild.parent = parent;
+            child.leftChild = parent;
+            parent.parent = child;
+            rotate(parent, child);
+        }
+        
+        // Case 4: G - rightChild - leftChild - right-left rotate
+        else if (child.isLeftChild() && !parent.isLeftChild()) {
+            G.rightChild = child;
+            child.parent = G;
+            parent.leftChild = child.rightChild;
+            if (parent.leftChild != null) parent.leftChild.parent = parent;
+            child.rightChild = parent;
+            parent.parent = child;
+            rotate(parent, child);
+        }
+        
     }
 
-    /**
-     * Performs the left rotate operation on the provided left child and parent in the tree
-     * @param
-     * @param parent
-     */
-    private void leftRotate(Node<T> parent)  {
-        Node<T> y = parent.rightChild;
-        parent.rightChild = y.leftChild;
-        if(y.leftChild != null){
-            y.leftChild.parent = parent;
-        }
-        y.parent = parent.parent;
-        if(parent.parent == null)
-            this.root = y;
-        else if(parent == parent.parent.leftChild){
-            parent.parent.leftChild = y;
-        }
-        else{
-            parent.parent.rightChild = y;
-        }
-        y.leftChild = parent;
-        parent.parent = y;
-    }
 
-    /**
-     * Provides the right rotate operation on the provided right child and parent in the tree
-     * @param parent
-     */
-    private void rightRotate(Node<T> parent) {
-        Node<T> y = parent.leftChild;
-        parent.leftChild = y.rightChild;
-        if (y.rightChild != null) {
-            y.rightChild.parent = parent;
-        }
-        y.parent = parent.parent;
-        if (parent.parent == null) {
-            this.root = y;
-        } else if (parent == parent.parent.rightChild) {
-            parent.parent.rightChild = y;
-        } else {
-            parent.parent.leftChild = y;
-        }
-        y.rightChild = parent;
-        parent.parent = y;
-    }
     /**
      * Get the size of the tree (its number of nodes).
      * @return the number of nodes in the tree
@@ -290,10 +309,9 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
     public boolean contains(T data) {
         // null references will not be stored within this tree
         if(data == null) throw new NullPointerException(
-                "This RedBlackTree cannot store null references.");
+            "This RedBlackTree cannot store null references.");
         return this.containsHelper(data, root);
     }
-
 
     /**
      * Recursive helper method that recurses through the tree and looks
@@ -379,15 +397,14 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
                 // is not empty yet
                 return !(current == null && (stack == null || stack.isEmpty()) );
             }
-
+            
         };
     }
 
-
     /**
-     * This method performs an inorder traversal of the tree. The string
+     * This method performs an inorder traversal of the tree. The string 
      * representations of each data value within this tree are assembled into a
-     * comma separated string within brackets (similar to many implementations
+     * comma separated string within brackets (similar to many implementations 
      * of java.util.Collection, like java.util.ArrayList, LinkedList, etc).
      * Note that this RedBlackTree class implementation of toString generates an
      * inorder traversal. The toString of the Node class class above
@@ -414,4 +431,3 @@ public class RedBlackTree<T extends Comparable<T>> implements SortedCollectionIn
     }
 
 }
-

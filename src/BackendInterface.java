@@ -18,7 +18,7 @@ public interface BackendInterface {
 	
 	public List<String> getAllTypes(); // lists all types of pokemon available to filter by
 	
-	public List<Pokemon> getPokemon(); // returns list of available pokemon, sorted by strength
+	public RedBlackTree<Pokemon> getPokemon(); // returns tree of available pokemon, sorted by level
 	
 	public void addPokemon(Pokemon pokemon); // adds pokemon to team
 	public void removePokemon(Pokemon pokemon); // removes pokemon from team

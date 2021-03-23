@@ -1,70 +1,66 @@
-Raichu, 76
-Squirtle, 36
-Charizard, 97
-Pikachu, 48
-Wartordle, 12 
-Lugia, 66
-Gengar, 71
-Rayquaza, 80
-Steelix, 62
-Charmander, 39 
-Spearow, 20
-Ekans, 51
-Sandshrew, 53
-Nidoran, 69
-Nidorina, 68
-Vulpix, 66
-Venomoth, 58
-Diglett, 22
-Golduck, 32
-Alakazam, 88
-Machop, 61
-Graveler, 44
-Ponyta, 94
-Slowpoke, 28
-Doduo, 18
-Dewgong, 12
-Muk, 31
-Shellder, 28
-Gastly, 66
-Onix, 84
-Drowzee, 72 
-Voltorb, 63
-Exeggcute, 77
-Cubone, 71
-Hitmonchan, 90
-Koffing, 60
-Weezing, 33
-Chansey, 49
-Kangaskhan, 95
-Horsea, 38
-Seadra, 29
-Seaking, 98
-Starmie, 55
-Scyther, 77
-Jynx, 50
-Gyrados, 102
-Magikarp, 7
-Lapras, 99
-Eevee, 9
-Vaporean, 92
-Joltean, 92
-Flareon, 92
-Porygon, 95
-Kabuto, 41
-Kabutops, 68
-Aerodactyl, 104
-Snorlax, 79
-Zapdos, 90
-Dratini, 78
-Dragonair, 82
-Dragonite, 88
-Mewtwo, 126
-Mew, 102
-Crobat, 14
-Lanturn, 10
-Pichu, 2
-Togepi, 4
-Jigglypuff, 49
-Slowking, 61
-Steelix, 73
+Raichu,76,Electric
+Squirtle,36,Water
+Charizard,97,Fire
+Pikachu,48,Electric
+Wartordle,12,Water
+Lugia,66,Psychic
+Gengar,71,Psychic
+Rayquaza,80,Dragon
+Steelix,62,Steel
+Charmander,39,Fire
+Spearow,20,Normal
+Ekans,51,Poison
+Sandshrew,53,Ground
+Nidoran,69,Poison
+Nidorina,68,Poison
+Vulpix,58,Fire
+Venomoth,22,Bug
+Diglett,32,Ground
+Golduck,88,Water
+Alakazam,61,Psychic
+Machop,44,Fighting
+Graveler,94,Rock
+Ponyta,28,Fire
+Slowpoke,18,Water
+Doduo,31,Normal
+Dewgong,84,Water
+Muk,72,Poison
+Shellder,63,Water
+Gastly,77,Ghost
+Onix,90,Rock
+Drowzee,60,Psychic
+Voltorb,33,Electric
+Exeggcute,49,Grass
+Cubone,95,Ground
+Hitmonchan,38,Fighting
+Koffing,29,Poison
+Weezing,98,Poison
+Chansey,55,Normal
+Kangaskhan,50,Normal
+Horsea,102,Water
+Seadra,7,Water
+Seaking,99,Water
+Starmie,9,Water
+Scyther,92,Grass
+Jynx,41,Ice
+Gyrados,104,Water
+Magikarp,79,Water
+Lapras,78,Water
+Eevee,82,Normal
+Vaporean,126,Water
+Joltean,14,Electric
+Flareon,10,Fire
+Porygon,2,Normal
+Kabuto,4,Rock
+Kabutops,103,Rock
+Aerodactyl,127,Rock
+Snorlax,116,Normal
+Zapdos,123,Electric
+Dratini,132,Dragon
+Dragonair,107,Dragon
+Dragonite,105,Dragon
+Mewtwo,110,Psychic
+Mew,140,Psychic
+Crobat,130,Poison
+Lanturn,26,Water
+Pichu,120,Electric
